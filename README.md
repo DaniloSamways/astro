@@ -17,4 +17,8 @@ pip install astropy astroquery
 
 
 ## Documentação Astroquery
+API
 https://astroquery.readthedocs.io/en/latest/api/astroquery.simbad.SimbadClass.html
+
+Lista databases
+https://astroquery.readthedocs.io/en/latest/
