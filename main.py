@@ -7,7 +7,7 @@ from astropy.time import Time
 from astroquery.simbad import Simbad
 import astropy.units as u
 
-from satellite_utils import find_visible_satellite_passes
+from satellite_utils import find_satellite_passes
 from utils import (
     DEFAULT_LOCATION,
     describe_cloud_cover,
@@ -479,7 +479,7 @@ def list_visible_satellites() -> None:
     )
 
     try:
-        passes = find_visible_satellite_passes(
+        satellite_passes = find_satellite_passes(
             latitude=location_data["latitude"],
             longitude=location_data["longitude"],
             height_m=location_data["height_m"],
@@ -496,15 +496,43 @@ def list_visible_satellites() -> None:
         input("\nPressione Enter para voltar ao terminal...")
         return
 
+    all_passes = satellite_passes["all_passes"]
+    visual_passes = satellite_passes["visual_passes"]
     lines = [
         f"Cidade: {location_data['city']}",
         f"Janela analisada: próximas 12 horas a partir de {observation_time}",
-        "Critério: apenas passagens visualmente favoráveis a olho nu.",
-        "O satélite precisa estar iluminado pelo Sol enquanto o céu local já está escuro.",
+        "Abaixo, o programa separa o que apenas passa no céu do que tende a ser visível a olho nu.",
         "",
     ]
 
-    if not passes:
+    lines.append("Satélites passando acima do horizonte:")
+    if not all_passes:
+        lines.append("❌ Nenhuma passagem acima do horizonte foi encontrada.")
+    else:
+        for satellite_pass in all_passes:
+            lines.extend(
+                [
+                    f"🛰️ {satellite_pass['name']}",
+                    (
+                        f"   Surge: {satellite_pass['rise_time'].astimezone():%d/%m %H:%M:%S} | "
+                        f"Pico: {satellite_pass['peak_time'].astimezone():%d/%m %H:%M:%S} | "
+                        f"Some: {satellite_pass['set_time'].astimezone():%d/%m %H:%M:%S}"
+                    ),
+                    (
+                        f"   Altitude máxima: {satellite_pass['peak_altitude']:.1f}° | "
+                        f"Azimute no pico: {satellite_pass['peak_azimuth']:.1f}°"
+                    ),
+                    (
+                        "   Estado de visibilidade: iluminado pelo Sol"
+                        if satellite_pass["sunlit"]
+                        else "   Estado de visibilidade: na sombra da Terra"
+                    ),
+                    "",
+                ]
+            )
+
+    lines.append("Satélites com chance real de observação a olho nu:")
+    if not visual_passes:
         lines.append(
             "❌ Nenhuma passagem visual clara foi encontrada na janela analisada."
         )
@@ -512,7 +540,7 @@ def list_visible_satellites() -> None:
             "Isso pode acontecer por nuvens, pouca altura, sombra da Terra ou céu muito claro."
         )
     else:
-        first_pass = passes[0]["rise_time"].astimezone()
+        first_pass = visual_passes[0]["rise_time"].astimezone()
         delta = first_pass - observation_time.astimezone()
         total_minutes = max(0, int(delta.total_seconds() // 60))
         hours = total_minutes // 60
@@ -525,8 +553,7 @@ def list_visible_satellites() -> None:
             "Se não apareceu nada perto de agora, isso costuma ser normal fora do amanhecer/entardecer."
         )
         lines.append("")
-        lines.append("Próximas passagens visualmente favoráveis:")
-        for satellite_pass in passes:
+        for satellite_pass in visual_passes:
             lines.extend(
                 [
                     f"🛰️ {satellite_pass['name']}",

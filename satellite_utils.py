@@ -12,6 +12,7 @@ MIN_VISUAL_ALTITUDE_DEGREES = 15.0
 LOOKAHEAD_HOURS = 12
 MAX_RESULTS = 10
 SUN_ALTITUDE_LIMIT_DEGREES = -4.0
+MIN_PASS_ALTITUDE_DEGREES = 10.0
 
 
 def fetch_visual_satellites() -> list[dict]:
@@ -54,25 +55,26 @@ def _satellite_passes_for_observer(
     eph,
     start_time_utc: datetime,
     end_time_utc: datetime,
-) -> list[dict]:
+) -> dict[str, list[dict]]:
     t0 = ts.from_datetime(start_time_utc)
     t1 = ts.from_datetime(end_time_utc)
     times, events = satellite.find_events(
         observer,
         t0,
         t1,
-        altitude_degrees=MIN_VISUAL_ALTITUDE_DEGREES,
+        altitude_degrees=MIN_PASS_ALTITUDE_DEGREES,
     )
 
     if len(times) == 0:
-        return []
+        return {"all_passes": [], "visual_passes": []}
 
     event_names = {
         0: "rise",
         1: "culminate",
         2: "set",
     }
-    grouped_passes = []
+    all_passes = []
+    visual_passes = []
     current_pass: dict = {}
 
     for time_value, event_code in zip(times, events):
@@ -92,29 +94,38 @@ def _satellite_passes_for_observer(
                 )
                 topocentric = (satellite - observer).at(culminate_time)
                 alt, az, _ = topocentric.altaz()
+                pass_data = {
+                    "name": satellite.name,
+                    "rise_time": current_pass["rise"].utc_datetime(),
+                    "peak_time": culminate_time.utc_datetime(),
+                    "set_time": current_pass["set"].utc_datetime(),
+                    "peak_altitude": alt.degrees,
+                    "peak_azimuth": az.degrees,
+                    "sunlit": sunlit,
+                    "sun_altitude": sun_alt.degrees,
+                }
+                all_passes.append(pass_data)
 
-                if sunlit and sun_alt.degrees <= SUN_ALTITUDE_LIMIT_DEGREES:
-                    grouped_passes.append(
-                        {
-                            "name": satellite.name,
-                            "rise_time": current_pass["rise"].utc_datetime(),
-                            "peak_time": culminate_time.utc_datetime(),
-                            "set_time": current_pass["set"].utc_datetime(),
-                            "peak_altitude": alt.degrees,
-                            "peak_azimuth": az.degrees,
-                        }
-                    )
+                if (
+                    alt.degrees >= MIN_VISUAL_ALTITUDE_DEGREES
+                    and sunlit
+                    and sun_alt.degrees <= SUN_ALTITUDE_LIMIT_DEGREES
+                ):
+                    visual_passes.append(pass_data)
             current_pass = {}
 
-    return grouped_passes
+    return {
+        "all_passes": all_passes,
+        "visual_passes": visual_passes,
+    }
 
 
-def find_visible_satellite_passes(
+def find_satellite_passes(
     latitude: float,
     longitude: float,
     height_m: float,
     when_local: datetime,
-) -> list[dict]:
+) -> dict[str, list[dict]]:
     if when_local.tzinfo is None:
         local_aware = when_local.astimezone()
     else:
@@ -128,18 +139,23 @@ def find_visible_satellite_passes(
     eph = _load_ephemeris()
     observer = wgs84.latlon(latitude, longitude, elevation_m=height_m)
 
-    visible_passes = []
+    all_passes = []
+    visual_passes = []
     for satellite in satellites:
-        visible_passes.extend(
-            _satellite_passes_for_observer(
-                satellite=satellite,
-                observer=observer,
-                ts=ts,
-                eph=eph,
-                start_time_utc=start_time_utc,
-                end_time_utc=end_time_utc,
-            )
+        satellite_passes = _satellite_passes_for_observer(
+            satellite=satellite,
+            observer=observer,
+            ts=ts,
+            eph=eph,
+            start_time_utc=start_time_utc,
+            end_time_utc=end_time_utc,
         )
+        all_passes.extend(satellite_passes["all_passes"])
+        visual_passes.extend(satellite_passes["visual_passes"])
 
-    visible_passes.sort(key=lambda item: item["peak_time"])
-    return visible_passes[:MAX_RESULTS]
+    all_passes.sort(key=lambda item: item["peak_time"])
+    visual_passes.sort(key=lambda item: item["peak_time"])
+    return {
+        "all_passes": all_passes[:MAX_RESULTS],
+        "visual_passes": visual_passes[:MAX_RESULTS],
+    }
