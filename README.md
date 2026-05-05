@@ -116,7 +116,3 @@ O modo `--json` foi pensado para integração com outras aplicações. Ele retor
 - A localização automática depende de serviços externos e pode falhar em redes restritas.
 - As previsões de nuvens e de satélites também dependem da disponibilidade das APIs consultadas.
 - Os resultados são ótimos para planejamento e triagem rápida, mas não substituem software astronômico especializado.
-
-## Licença
-
-Defina aqui a licença do projeto se você quiser publicar no GitHub com esse detalhe explícito.
