@@ -9,6 +9,7 @@ Astro é uma CLI em Python para consultar o céu a partir de uma cidade ou da lo
 - Ver passagens de satélites nas próximas horas.
 - Usar modo interativo no terminal ou saída JSON para automação.
 - Informar cidade manualmente ou deixar o programa tentar detectar sua localização.
+- Consumir a mesma lógica astronômica por uma API em Node.js com Express.
 
 ## Tecnologias e fontes de dados
 
@@ -70,6 +71,43 @@ Comandos disponíveis no modo JSON:
 - `visible-objects`: lista os objetos de referência acima do horizonte no horário informado.
 - `satellites`: retorna as passagens previstas e separa as que têm melhor chance de visibilidade.
 
+## API Node.js
+
+O projeto agora também inclui uma camada Express em `node-api/`, pensada para expor as mesmas consultas do Python via HTTP. A API não reimplementa a lógica astronômica: ela chama um bridge Python que reutiliza os services existentes.
+
+### Estrutura da API
+
+- `node-api/package.json`: dependências e scripts do servidor.
+- `node-api/src/server.js`: inicialização da API.
+- `node-api/src/app.js`: configuração do Express.
+- `node-api/src/routes/astro.routes.js`: rotas públicas.
+- `node-api/src/services/pythonAstroService.js`: integração com o bridge Python.
+- `python_api.py`: entrada Python usada pela API para acessar os services.
+
+### Rotas disponíveis
+
+- `GET /api/v1/health`
+- `GET /api/v1/object?name=Sirius&city=São Paulo`
+- `GET /api/v1/visible-objects?city=São Paulo`
+- `GET /api/v1/satellites?city=São Paulo&datetime=2026-05-04T21:30:00-03:00`
+
+### Como rodar a API
+
+```bash
+cd node-api
+npm install
+npm start
+```
+
+Se o Python binário não estiver em `python3`, defina `PYTHON_BIN` antes de iniciar a API.
+Por padrão, a API tenta usar o Python do `venv/` do projeto e só depois cai para o binário do sistema.
+
+Exemplo:
+
+```bash
+PYTHON_BIN=python3.11 npm start
+```
+
 ## Exemplos de uso
 
 Buscar um planeta ou estrela:
@@ -96,6 +134,8 @@ python3 main.py --json satellites --auto-location
 - `cli/`: interface de terminal e parser do modo JSON.
 - `services/`: regras de negócio, consultas astronômicas e integrações externas.
 - `services/api_service.py`: funções prontas para consumo por APIs e automações.
+- `python_api.py`: bridge Python consumida pela API Node.
+- `node-api/`: API Express que expõe os serviços via HTTP.
 - `config.py`: constantes do projeto, objetos suportados e localização padrão.
 
 ## Como funciona por baixo dos panos
@@ -116,3 +156,7 @@ O modo `--json` foi pensado para integração com outras aplicações. Ele retor
 - A localização automática depende de serviços externos e pode falhar em redes restritas.
 - As previsões de nuvens e de satélites também dependem da disponibilidade das APIs consultadas.
 - Os resultados são ótimos para planejamento e triagem rápida, mas não substituem software astronômico especializado.
+
+## Licença
+
+Defina aqui a licença do projeto se você quiser publicar no GitHub com esse detalhe explícito.
