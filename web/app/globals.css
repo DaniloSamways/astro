@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: var(--font-body), sans-serif;
+    color: #ffffff;
+    background-color: #04070f;
+    background-image:
+      radial-gradient(circle at 16% 18%, rgba(120, 240, 255, 0.16), transparent 0 24%),
+      radial-gradient(circle at 82% 12%, rgba(255, 203, 107, 0.12), transparent 0 22%),
+      radial-gradient(circle at 76% 82%, rgba(128, 245, 201, 0.11), transparent 0 26%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03), transparent 0 46%),
+      linear-gradient(180deg, #04070f 0%, #050916 42%, #04070f 100%);
+    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: rgba(120, 240, 255, 0.28);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .cosmic-panel {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 1px rgba(120, 240, 255, 0.12), 0 30px 90px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(24px);
+  }
+
+  .cosmic-panel-strong {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 1px rgba(120, 240, 255, 0.12), 0 30px 90px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(24px);
+  }
+
+  .cosmic-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(20px);
+  }
+
+  .cosmic-divider {
+    background: linear-gradient(90deg, transparent, rgba(120, 240, 255, 0.5), transparent);
+  }
+
+  .cosmic-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .cosmic-noise {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px),
+      radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px),
+      radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px),
+      radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px);
+    background-size: 160px 160px;
+    opacity: 0.32;
+  }
+}
