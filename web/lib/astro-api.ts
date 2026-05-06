@@ -72,6 +72,11 @@ type DashboardQuery = {
   datetime?: string;
 };
 
+type SectionQuery = {
+  city: string;
+  datetime?: string;
+};
+
 function withCacheBuster(searchParams: URLSearchParams) {
   searchParams.set("t", Date.now().toString());
   return searchParams;
@@ -93,31 +98,58 @@ async function fetchJson<T>(path: string, searchParams?: URLSearchParams) {
   return (await response.json()) as T;
 }
 
-export async function loadAstroDashboard(query: DashboardQuery) {
+function buildSectionQuery(query: SectionQuery) {
+  const sectionQuery = new URLSearchParams({ city: query.city });
+
+  if (query.datetime) {
+    sectionQuery.set("datetime", query.datetime);
+  }
+
+  return sectionQuery;
+}
+
+export async function loadObjectReport(query: DashboardQuery) {
   const objectQuery = new URLSearchParams({
     city: query.city,
     name: query.objectName,
   });
-  const visibleQuery = new URLSearchParams({ city: query.city });
-  const satelliteQuery = new URLSearchParams({ city: query.city });
 
   if (query.datetime) {
     objectQuery.set("datetime", query.datetime);
-    visibleQuery.set("datetime", query.datetime);
-    satelliteQuery.set("datetime", query.datetime);
   }
 
+  const response = await fetchJson<{ ok: boolean; data: ObjectReport }>(
+    `${ASTRO_API_BASE_PATH}/object`,
+    objectQuery,
+  );
+
+  return response.data;
+}
+
+export async function loadVisibleObjectsReport(query: SectionQuery) {
+  const response = await fetchJson<{ ok: boolean; data: VisibleObjectsReport }>(
+    `${ASTRO_API_BASE_PATH}/visible-objects`,
+    buildSectionQuery(query),
+  );
+
+  return response.data;
+}
+
+export async function loadSatelliteReport(query: SectionQuery) {
+  const response = await fetchJson<{ ok: boolean; data: SatelliteReport }>(
+    `${ASTRO_API_BASE_PATH}/satellites`,
+    buildSectionQuery(query),
+  );
+
+  return response.data;
+}
+
+export async function loadAstroDashboard(query: DashboardQuery) {
   const [health, objectReport, visibleReport, satelliteReport] = await Promise.all([
     fetchJson<HealthResponse>(`${ASTRO_API_BASE_PATH}/health`),
-    fetchJson<{ ok: boolean; data: ObjectReport }>(`${ASTRO_API_BASE_PATH}/object`, objectQuery),
-    fetchJson<{ ok: boolean; data: VisibleObjectsReport }>(
-      `${ASTRO_API_BASE_PATH}/visible-objects`,
-      visibleQuery,
-    ),
-    fetchJson<{ ok: boolean; data: SatelliteReport }>(
-      `${ASTRO_API_BASE_PATH}/satellites`,
-      satelliteQuery,
-    ),
+    loadObjectReport(query).then((data) => ({ ok: true, data })),
+    loadVisibleObjectsReport(query).then((data) => ({ ok: true, data })),
+    loadSatelliteReport(query).then((data) => ({ ok: true, data })),
   ]);
 
   return {
