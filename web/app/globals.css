@@ -78,6 +78,15 @@ body {
   }
 }
 
+@layer components {
+  :root {
+    --sky: #78f0ff;
+    --sun: #ffcb6b;
+    --mint: #80f5c9;
+    --ink: #0a0e27;
+  }
+}
+
 @layer utilities {
   .cosmic-chip {
     display: inline-flex;
@@ -91,5 +100,114 @@ body {
     font-weight: 500;
     color: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(20px);
+  }
+
+  .bg-sky {
+    background-color: var(--sky);
+  }
+
+  .text-sky {
+    color: var(--sky);
+  }
+
+  .border-sky {
+    border-color: var(--sky);
+  }
+
+  .shadow-sky {
+    box-shadow: 0 0 20px var(--sky);
+  }
+
+  .bg-sun {
+    background-color: var(--sun);
+  }
+
+  .text-sun {
+    color: var(--sun);
+  }
+
+  .border-sun {
+    border-color: var(--sun);
+  }
+
+  .bg-mint {
+    background-color: var(--mint);
+  }
+
+  .text-mint {
+    color: var(--mint);
+  }
+
+  .border-mint {
+    border-color: var(--mint);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(20px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(120, 240, 255, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(120, 240, 255, 0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%);
+    background-size: 1000px 100%;
+  }
+
+  .animate-reveal {
+    animation: reveal 0.6s ease-out;
   }
 }
