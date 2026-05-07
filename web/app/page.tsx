@@ -760,6 +760,7 @@ export default function Page() {
           color: #a1a1aa;
           line-height: 1.8;
           white-space: pre;
+          overflow-x: auto;
         }
 
         .code-block .comment { color: #3f3f46; }
