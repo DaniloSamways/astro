@@ -1838,7 +1838,12 @@ export default function Page() {
           particlesContainer.appendChild(p);
         }
 
-        gsap.registerPlugin(ScrollTrigger);
+        const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
+        const runDesktopScrollAnimations = !isMobileViewport;
+
+        if (runDesktopScrollAnimations) {
+          gsap.registerPlugin(ScrollTrigger);
+        }
 
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         tl.to('.hero-label', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 })
@@ -1850,54 +1855,61 @@ export default function Page() {
 
         gsap.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
 
-        gsap.to('#dash-frame', {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '#preview',
-            start: 'top 80%'
-          }
-        });
-
-        gsap.utils.toArray('.feature-card').forEach((card, i) => {
-          gsap.from(card, {
-            opacity: 0,
-            y: 30,
-            duration: 0.7,
-            delay: i * 0.08,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 88%'
-            }
-          });
-        });
-
-        gsap.utils.toArray('.step').forEach((step) => {
-          gsap.to(step, {
+        if (runDesktopScrollAnimations) {
+          gsap.to('#dash-frame', {
             opacity: 1,
             y: 0,
-            duration: 0.7,
-            ease: 'power2.out',
+            duration: 1.2,
+            ease: 'power3.out',
             scrollTrigger: {
-              trigger: step,
-              start: 'top 85%'
+              trigger: '#preview',
+              start: 'top 80%'
             }
           });
-        });
 
-        gsap.from('.os-card', {
-          opacity: 0,
-          y: 40,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '#opensource',
-            start: 'top 80%'
-          }
-        });
+          gsap.utils.toArray('.feature-card').forEach((card, i) => {
+            gsap.from(card, {
+              opacity: 0,
+              y: 30,
+              duration: 0.7,
+              delay: i * 0.08,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 88%'
+              }
+            });
+          });
+
+          gsap.utils.toArray('.step').forEach((step) => {
+            gsap.to(step, {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: step,
+                start: 'top 85%'
+              }
+            });
+          });
+
+          gsap.from('.os-card', {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '#opensource',
+              start: 'top 80%'
+            }
+          });
+        } else {
+          document.querySelectorAll('#dash-frame, .step').forEach((el) => {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          });
+        }
 
         document.addEventListener('mousemove', (e) => {
           const x = (e.clientX / window.innerWidth - 0.5) * 30;
@@ -1927,19 +1939,21 @@ export default function Page() {
           }
         });
 
-        gsap.utils.toArray('.install-step').forEach((step, i) => {
-          gsap.from(step, {
-            opacity: 0,
-            y: 20,
-            duration: 0.6,
-            delay: i * 0.1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: step,
-              start: 'top 88%'
-            }
+        if (runDesktopScrollAnimations) {
+          gsap.utils.toArray('.install-step').forEach((step, i) => {
+            gsap.from(step, {
+              opacity: 0,
+              y: 20,
+              duration: 0.6,
+              delay: i * 0.1,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: step,
+                start: 'top 88%'
+              }
+            });
           });
-        });
+        }
 
         lucide.createIcons();
       `}</Script>
