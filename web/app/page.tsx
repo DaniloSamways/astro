@@ -260,14 +260,16 @@ export default function Page() {
           pointer-events: none;
         }
         .orb-1 {
-          width: 500px; height: 500px;
-          background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+          width: 100vw;
+          max-width: 500px; 
+          height: 500px;
+          background: radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%);
           top: 10%; left: 50%;
           transform: translateX(-50%);
         }
         .orb-2 {
           width: 300px; height: 300px;
-          background: radial-gradient(circle, rgba(196,181,253,0.05) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(196,181,253,0.1) 0%, transparent 70%);
           bottom: 20%; right: 10%;
         }
 
@@ -275,16 +277,19 @@ export default function Page() {
         #preview {
           position: relative;
           z-index: 1;
-          padding: 0 32px 120px;
+          padding: 32px 32px 120px;
+          overflow: hidden;
         }
 
         .preview-wrapper {
           max-width: 1100px;
           margin: 0 auto;
           position: relative;
+          overflow: hidden;
         }
 
         .preview-glow {
+          z-index: 0;
           position: absolute;
           inset: -60px;
           background: radial-gradient(ellipse at 50% 30%, rgba(167,139,250,0.12) 0%, transparent 65%);
@@ -293,6 +298,7 @@ export default function Page() {
         }
 
         .preview-light-left {
+          z-index: 0;
           position: absolute;
           left: -80px; top: 50%;
           transform: translateY(-50%);
@@ -303,6 +309,7 @@ export default function Page() {
         }
 
         .preview-light-right {
+          z-index: 0;
           position: absolute;
           right: -80px; top: 50%;
           transform: translateY(-50%);
@@ -1035,8 +1042,8 @@ export default function Page() {
         </h1>
 
         <p className="hero-sub">
-          Um painel astronômico com vidro translúcido que mostra em tempo real
-          quais objetos celestes e satélites estão visíveis na sua localização.
+          Um painel astronômico que mostra em tempo real quais objetos celestes
+          e satélites estão visíveis na sua localização.
         </p>
 
         <div className="hero-actions">
@@ -1083,11 +1090,10 @@ export default function Page() {
       </section>
 
       <section id="preview">
+        <div className="preview-glow" />
+        <div className="preview-light-left" />
+        <div className="preview-light-right" />
         <div className="preview-wrapper">
-          <div className="preview-glow" />
-          <div className="preview-light-left" />
-          <div className="preview-light-right" />
-
           <div className="preview-frame" id="dash-frame">
             <div className="preview-topbar">
               <div className="tb-dot r" />
