@@ -1,6 +1,12 @@
+"use client";
+
 import Script from "next/script";
 
+import { useIsMobile } from "../lib/use-is-mobile";
+
 export default function Page() {
+  const isMobile = useIsMobile();
+
   return (
     <>
       <style>{`
@@ -988,7 +994,7 @@ export default function Page() {
       <nav id="main-nav">
         <div className="nav-logo">
           <div className="dot" />
-          Astro Control Deck
+          {isMobile ? "ASTRO CONTROL" : "Astro Control Deck"}
         </div>
         <ul className="nav-links">
           <li>
