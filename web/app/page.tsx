@@ -894,7 +894,7 @@ export default function Page() {
 
         .footer-note {
           font-size: 12px;
-          color: var(--text-dim);
+          color: var(--text);
         }
 
         .footer-links {
@@ -1739,12 +1739,19 @@ export default function Page() {
               display: "inline-block",
               width: "13px",
               height: "13px",
-              stroke: "var(--text-dim)",
+              stroke: "red",
               verticalAlign: "middle",
               margin: "0 2px",
             }}
           />{" "}
-          para quem olha para cima
+          por{" "}
+          <a
+            href="https://br.linkedin.com/in/danilo-samways"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Danilo Samways
+          </a>
         </div>
         <div className="footer-links">
           <a
@@ -1753,6 +1760,13 @@ export default function Page() {
             rel="noreferrer"
           >
             GitHub
+          </a>
+          <a
+            href="https://br.linkedin.com/in/danilo-samways"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
           </a>
           <a href="#install">Docs</a>
         </div>
