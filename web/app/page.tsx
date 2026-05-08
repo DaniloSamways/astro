@@ -1859,12 +1859,11 @@ export default function Page() {
         }
 
         const isDesktopViewport = window.matchMedia('(min-width: 901px)').matches;
-        const runDesktopScrollAnimations = isDesktopViewport;
         const gsapRef = window.gsap;
         const scrollTriggerRef = window.ScrollTrigger;
         const canUseGsap = Boolean(gsapRef);
 
-        if (runDesktopScrollAnimations && canUseGsap && scrollTriggerRef) {
+        if (isDesktopViewport && canUseGsap && scrollTriggerRef) {
           gsapRef.registerPlugin(scrollTriggerRef);
         }
 
@@ -1885,7 +1884,7 @@ export default function Page() {
           });
         }
 
-        if (runDesktopScrollAnimations && canUseGsap) {
+        if (isDesktopViewport && canUseGsap) {
           gsapRef.to('#dash-frame', {
             opacity: 1,
             y: 0,
@@ -1971,7 +1970,7 @@ export default function Page() {
           }
         });
 
-        if (runDesktopScrollAnimations && canUseGsap) {
+        if (isDesktopViewport && canUseGsap) {
           gsapRef.utils.toArray('.install-step').forEach((step, i) => {
             gsapRef.from(step, {
               opacity: 0,
