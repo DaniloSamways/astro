@@ -1987,8 +1987,15 @@ export default function Page() {
           });
         }
 
-        if (window.lucide) {
+        function renderLucideIcons() {
+          if (!window.lucide) return false;
           window.lucide.createIcons();
+          return true;
+        }
+
+        if (!renderLucideIcons()) {
+          window.addEventListener('load', renderLucideIcons, { once: true });
+          setTimeout(renderLucideIcons, 300);
         }
       `}</Script>
     </>
