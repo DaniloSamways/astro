@@ -1987,9 +1987,12 @@ export default function Page() {
           });
         }
 
+        let lucideIconsRendered = false;
+
         function renderLucideIcons() {
-          if (!window.lucide) return false;
+          if (lucideIconsRendered || !window.lucide) return false;
           window.lucide.createIcons();
+          lucideIconsRendered = true;
           return true;
         }
 
