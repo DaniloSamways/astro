@@ -1987,18 +1987,19 @@ export default function Page() {
           });
         }
 
-        let lucideIconsRendered = false;
+        const LUCIDE_RENDER_TIMEOUT_MS = 300;
+        window.__astroLucideIconsRendered = window.__astroLucideIconsRendered || false;
 
         function renderLucideIcons() {
-          if (lucideIconsRendered || !window.lucide) return false;
+          if (window.__astroLucideIconsRendered || !window.lucide) return false;
           window.lucide.createIcons();
-          lucideIconsRendered = true;
+          window.__astroLucideIconsRendered = true;
           return true;
         }
 
         if (!renderLucideIcons()) {
           window.addEventListener('load', renderLucideIcons, { once: true });
-          setTimeout(renderLucideIcons, 300);
+          setTimeout(renderLucideIcons, LUCIDE_RENDER_TIMEOUT_MS);
         }
       `}</Script>
     </>
