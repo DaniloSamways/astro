@@ -1987,22 +1987,25 @@ export default function Page() {
           });
         }
 
-        const LUCIDE_RENDER_TIMEOUT_MS = 300;
-        window.__astroLucideIconsRendered = window.__astroLucideIconsRendered || false;
+        const LUCIDE_RETRY_INTERVAL_MS = 100;
+        const LUCIDE_MAX_RETRIES = 20;
+        window.__lucideIconsRendered = window.__lucideIconsRendered || false;
 
         function renderLucideIcons() {
-          if (window.__astroLucideIconsRendered || !window.lucide) return false;
+          if (window.__lucideIconsRendered || !window.lucide) return false;
           window.lucide.createIcons();
-          window.__astroLucideIconsRendered = true;
+          window.__lucideIconsRendered = true;
           return true;
         }
 
         if (!renderLucideIcons()) {
-          const lucideRenderTimeoutId = setTimeout(renderLucideIcons, LUCIDE_RENDER_TIMEOUT_MS);
-          window.addEventListener('load', () => {
-            clearTimeout(lucideRenderTimeoutId);
-            renderLucideIcons();
-          }, { once: true });
+          let lucideRetries = 0;
+          const lucideRetryIntervalId = setInterval(() => {
+            lucideRetries += 1;
+            if (renderLucideIcons() || lucideRetries >= LUCIDE_MAX_RETRIES) {
+              clearInterval(lucideRetryIntervalId);
+            }
+          }, LUCIDE_RETRY_INTERVAL_MS);
         }
       `}</Script>
     </>
