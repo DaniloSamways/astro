@@ -1861,13 +1861,13 @@ export default function Page() {
         const isDesktopViewport = window.matchMedia('(min-width: 901px)').matches;
         const gsapRef = window.gsap;
         const scrollTriggerRef = window.ScrollTrigger;
-        const canUseGsap = Boolean(gsapRef);
+        const hasGsap = Boolean(gsapRef);
 
-        if (isDesktopViewport && canUseGsap && scrollTriggerRef) {
+        if (isDesktopViewport && hasGsap && scrollTriggerRef) {
           gsapRef.registerPlugin(scrollTriggerRef);
         }
 
-        if (canUseGsap) {
+        if (hasGsap) {
           gsapRef.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
 
           const tl = gsapRef.timeline({ defaults: { ease: 'power3.out' } });
@@ -1878,13 +1878,14 @@ export default function Page() {
             .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
             .to('#scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
         } else {
+          // Desktop esconde os elementos base para animação; esse fallback garante conteúdo visível sem GSAP.
           document.querySelectorAll('.hero-label, .hero-title, .hero-sub, .hero-actions, .hero-stats').forEach((el) => {
             el.style.opacity = '1';
             el.style.transform = 'none';
           });
         }
 
-        if (isDesktopViewport && canUseGsap) {
+        if (isDesktopViewport && hasGsap) {
           gsapRef.to('#dash-frame', {
             opacity: 1,
             y: 0,
@@ -1940,7 +1941,7 @@ export default function Page() {
           });
         }
 
-        if (canUseGsap && isDesktopViewport) {
+        if (hasGsap && isDesktopViewport) {
           document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth - 0.5) * 30;
             const y = (e.clientY / window.innerHeight - 0.5) * 20;
@@ -1970,7 +1971,7 @@ export default function Page() {
           }
         });
 
-        if (isDesktopViewport && canUseGsap) {
+        if (isDesktopViewport && hasGsap) {
           gsapRef.utils.toArray('.install-step').forEach((step, i) => {
             gsapRef.from(step, {
               opacity: 0,
