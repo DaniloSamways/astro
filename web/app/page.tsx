@@ -1858,8 +1858,8 @@ export default function Page() {
           particlesContainer.appendChild(p);
         }
 
-        const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
-        const runDesktopScrollAnimations = !isMobileViewport;
+        const isDesktopViewport = window.matchMedia('(min-width: 901px)').matches;
+        const runDesktopScrollAnimations = isDesktopViewport;
         const gsapRef = window.gsap;
         const scrollTriggerRef = window.ScrollTrigger;
         const canUseGsap = Boolean(gsapRef);
@@ -1869,6 +1869,8 @@ export default function Page() {
         }
 
         if (canUseGsap) {
+          gsapRef.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
+
           const tl = gsapRef.timeline({ defaults: { ease: 'power3.out' } });
           tl.to('.hero-label', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 })
             .to('.hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.5')
@@ -1876,8 +1878,6 @@ export default function Page() {
             .to('.hero-actions', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
             .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
             .to('#scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
-
-          gsapRef.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
         } else {
           document.querySelectorAll('.hero-label, .hero-title, .hero-sub, .hero-actions, .hero-stats').forEach((el) => {
             el.style.opacity = '1';
@@ -1941,7 +1941,7 @@ export default function Page() {
           });
         }
 
-        if (canUseGsap && !isMobileViewport) {
+        if (canUseGsap && isDesktopViewport) {
           document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth - 0.5) * 30;
             const y = (e.clientY / window.innerHeight - 0.5) * 20;
