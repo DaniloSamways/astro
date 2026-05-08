@@ -1998,8 +1998,11 @@ export default function Page() {
         }
 
         if (!renderLucideIcons()) {
-          window.addEventListener('load', renderLucideIcons, { once: true });
-          setTimeout(renderLucideIcons, LUCIDE_RENDER_TIMEOUT_MS);
+          const lucideRenderTimeoutId = setTimeout(renderLucideIcons, LUCIDE_RENDER_TIMEOUT_MS);
+          window.addEventListener('load', () => {
+            clearTimeout(lucideRenderTimeoutId);
+            renderLucideIcons();
+          }, { once: true });
         }
       `}</Script>
     </>
