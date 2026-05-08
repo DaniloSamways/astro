@@ -144,7 +144,7 @@ export default function Page() {
           padding: 6px 14px;
           border-radius: 100px;
           margin-bottom: 36px;
-          opacity: 0;
+          opacity: 1;
         }
 
         .hero-title {
@@ -155,7 +155,7 @@ export default function Page() {
           color: var(--white);
           max-width: 820px;
           margin-bottom: 28px;
-          opacity: 0;
+          opacity: 1;
           letter-spacing: -0.02em;
         }
 
@@ -171,14 +171,14 @@ export default function Page() {
           max-width: 480px;
           line-height: 1.7;
           margin-bottom: 48px;
-          opacity: 0;
+          opacity: 1;
         }
 
         .hero-actions {
           display: flex;
           gap: 14px;
           align-items: center;
-          opacity: 0;
+          opacity: 1;
           flex-wrap: wrap;
           justify-content: center;
         }
@@ -231,7 +231,7 @@ export default function Page() {
           display: flex;
           gap: 48px;
           margin-top: 72px;
-          opacity: 0;
+          opacity: 1;
         }
 
         .stat {
@@ -329,8 +329,8 @@ export default function Page() {
             0 32px 80px rgba(0,0,0,0.8),
             0 0 120px rgba(167,139,250,0.08),
             inset 0 1px 0 rgba(255,255,255,0.08);
-          opacity: 0;
-          transform: translateY(40px);
+          opacity: 1;
+          transform: none;
         }
 
         .preview-topbar {
@@ -648,8 +648,8 @@ export default function Page() {
           align-items: start;
           padding: 36px 0;
           border-bottom: 1px solid var(--border-soft);
-          opacity: 0;
-          transform: translateY(20px);
+          opacity: 1;
+          transform: none;
         }
         .step:last-child { border-bottom: none; }
 
@@ -982,6 +982,26 @@ export default function Page() {
           10% { opacity: 1; }
           90% { opacity: 1; }
           100% { transform: translateY(-100px) translateX(30px); opacity: 0; }
+        }
+
+        @media (min-width: 901px) {
+          .hero-label,
+          .hero-title,
+          .hero-sub,
+          .hero-actions,
+          .hero-stats {
+            opacity: 0;
+          }
+
+          .preview-frame {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+
+          .step {
+            opacity: 0;
+            transform: translateY(20px);
+          }
         }
 
         /* Responsive */
@@ -1787,15 +1807,15 @@ export default function Page() {
 
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
       />
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
       />
       <Script
         src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
       />
 
       <Script id="astro-landing-scripts" strategy="afterInteractive">{`
@@ -1840,23 +1860,33 @@ export default function Page() {
 
         const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
         const runDesktopScrollAnimations = !isMobileViewport;
+        const gsapRef = window.gsap;
+        const scrollTriggerRef = window.ScrollTrigger;
+        const canUseGsap = Boolean(gsapRef);
 
-        if (runDesktopScrollAnimations) {
-          gsap.registerPlugin(ScrollTrigger);
+        if (runDesktopScrollAnimations && canUseGsap && scrollTriggerRef) {
+          gsapRef.registerPlugin(scrollTriggerRef);
         }
 
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        tl.to('.hero-label', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 })
-          .to('.hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.5')
-          .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8 }, '-=0.6')
-          .to('.hero-actions', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-          .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
-          .to('#scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
+        if (canUseGsap) {
+          const tl = gsapRef.timeline({ defaults: { ease: 'power3.out' } });
+          tl.to('.hero-label', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 })
+            .to('.hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.5')
+            .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8 }, '-=0.6')
+            .to('.hero-actions', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+            .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+            .to('#scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
 
-        gsap.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
+          gsapRef.set(['.hero-label', '.hero-title', '.hero-sub', '.hero-actions', '.hero-stats'], { y: 24 });
+        } else {
+          document.querySelectorAll('.hero-label, .hero-title, .hero-sub, .hero-actions, .hero-stats').forEach((el) => {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          });
+        }
 
-        if (runDesktopScrollAnimations) {
-          gsap.to('#dash-frame', {
+        if (runDesktopScrollAnimations && canUseGsap) {
+          gsapRef.to('#dash-frame', {
             opacity: 1,
             y: 0,
             duration: 1.2,
@@ -1867,8 +1897,8 @@ export default function Page() {
             }
           });
 
-          gsap.utils.toArray('.feature-card').forEach((card, i) => {
-            gsap.from(card, {
+          gsapRef.utils.toArray('.feature-card').forEach((card, i) => {
+            gsapRef.from(card, {
               opacity: 0,
               y: 30,
               duration: 0.7,
@@ -1881,8 +1911,8 @@ export default function Page() {
             });
           });
 
-          gsap.utils.toArray('.step').forEach((step) => {
-            gsap.to(step, {
+          gsapRef.utils.toArray('.step').forEach((step) => {
+            gsapRef.to(step, {
               opacity: 1,
               y: 0,
               duration: 0.7,
@@ -1894,7 +1924,7 @@ export default function Page() {
             });
           });
 
-          gsap.from('.os-card', {
+          gsapRef.from('.os-card', {
             opacity: 0,
             y: 40,
             duration: 1,
@@ -1911,12 +1941,14 @@ export default function Page() {
           });
         }
 
-        document.addEventListener('mousemove', (e) => {
-          const x = (e.clientX / window.innerWidth - 0.5) * 30;
-          const y = (e.clientY / window.innerHeight - 0.5) * 20;
-          gsap.to('.orb-1', { x, y, duration: 2, ease: 'power1.out' });
-          gsap.to('.orb-2', { x: -x * 0.5, y: -y * 0.5, duration: 2.5, ease: 'power1.out' });
-        });
+        if (canUseGsap && !isMobileViewport) {
+          document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 30;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            gsapRef.to('.orb-1', { x, y, duration: 2, ease: 'power1.out' });
+            gsapRef.to('.orb-2', { x: -x * 0.5, y: -y * 0.5, duration: 2.5, ease: 'power1.out' });
+          });
+        }
 
         function copyCode(btn) {
           const code = btn.nextElementSibling.innerText;
@@ -1939,9 +1971,9 @@ export default function Page() {
           }
         });
 
-        if (runDesktopScrollAnimations) {
-          gsap.utils.toArray('.install-step').forEach((step, i) => {
-            gsap.from(step, {
+        if (runDesktopScrollAnimations && canUseGsap) {
+          gsapRef.utils.toArray('.install-step').forEach((step, i) => {
+            gsapRef.from(step, {
               opacity: 0,
               y: 20,
               duration: 0.6,
@@ -1955,7 +1987,9 @@ export default function Page() {
           });
         }
 
-        lucide.createIcons();
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
       `}</Script>
     </>
   );
