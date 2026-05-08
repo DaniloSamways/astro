@@ -1878,7 +1878,7 @@ export default function Page() {
             .to('.hero-stats', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
             .to('#scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
         } else {
-          // Desktop esconde os elementos base para animação; esse fallback garante conteúdo visível sem GSAP.
+          // Desktop hides base animation elements; this fallback keeps content visible without GSAP.
           document.querySelectorAll('.hero-label, .hero-title, .hero-sub, .hero-actions, .hero-stats').forEach((el) => {
             el.style.opacity = '1';
             el.style.transform = 'none';
