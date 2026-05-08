@@ -1989,24 +1989,24 @@ export default function Page() {
 
         const LUCIDE_RETRY_INTERVAL_MS = 100;
         const LUCIDE_MAX_RETRIES = 20;
-        window.__lucideIconsRendered = window.__lucideIconsRendered || false;
+        let lucideIconsRendered = false;
+        let lucideRetries = 0;
 
         function renderLucideIcons() {
-          if (window.__lucideIconsRendered || !window.lucide) return false;
+          if (lucideIconsRendered || !window.lucide) return false;
           window.lucide.createIcons();
-          window.__lucideIconsRendered = true;
+          lucideIconsRendered = true;
           return true;
         }
 
-        if (!renderLucideIcons()) {
-          let lucideRetries = 0;
-          const lucideRetryIntervalId = setInterval(() => {
-            lucideRetries += 1;
-            if (renderLucideIcons() || lucideRetries >= LUCIDE_MAX_RETRIES) {
-              clearInterval(lucideRetryIntervalId);
-            }
-          }, LUCIDE_RETRY_INTERVAL_MS);
+        function retryRenderLucideIcons() {
+          if (renderLucideIcons()) return;
+          lucideRetries += 1;
+          if (lucideRetries >= LUCIDE_MAX_RETRIES) return;
+          setTimeout(retryRenderLucideIcons, LUCIDE_RETRY_INTERVAL_MS);
         }
+
+        retryRenderLucideIcons();
       `}</Script>
     </>
   );
